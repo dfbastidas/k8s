@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: back-and-front-ingress
+  namespace: prod
+  annotations:
+    ingressClassName: nginx
+spec:
+  rules:
+  - host: k8s-back.com
+    http:
+      paths:
+      - path: /api(/|$)(.*)  # Coincide con /api y lo reescribe correctamente
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: backend-symfony-prod
+            port:
+              number: 8080
+  - host: k8s-frontend.com  # Para el frontend
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-symfony-prod
+            port:
+              number: 80

@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prod
+  labels:
+    name: prod
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/change-cause: "cambio de la versión v4 a v5"
+  name: backend-symfony-prod
+  namespace: prod
+  labels:
+    app: back
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: back
+  template:
+    metadata:
+      labels:
+        app: back
+    spec:
+      containers:
+      - name: backend-symfony
+        image: dbastidas/symfony-k8s-back:v5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-symfony-prod
+  namespace: prod
+  labels:
+    app: back
+spec:
+  type: ClusterIP
+  selector:
+    app: back
+  ports:
+   - protocol: TCP
+     port: 8080
+     targetPort: 80
